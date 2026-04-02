@@ -12,7 +12,7 @@ The main paper experiments are conducted in an IR-only setting with a pairwise M
 
 Overview
 
-Main paper setting
+Main paper setting:
 
 IR-only input
 
@@ -69,6 +69,7 @@ multimodal ablation experiments
 peak-table supplementary experiments
 
 scaffold-level failure analysis for SI
+
 
 Data
 
