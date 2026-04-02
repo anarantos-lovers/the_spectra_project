@@ -76,31 +76,31 @@ Data
 
 The experiments are based on a filtered dataset derived from a public multimodal spectroscopic dataset for chemistry. In this project, the processed dataset typically retains columns such as:
 
- smiles
+ 1.smiles
 
- molecular_formula
+ 2.molecular_formula
 
- ir_spectra
+ 3.ir_spectra
 
- h_nmr_peaks
+ 4.h_nmr_peaks
 
- c_nmr_peaks
+ 5.c_nmr_peaks
 
- hsqc_nmr_peaks
+ 6.hsqc_nmr_peaks
 
- msms_cfmid_fragments_negative
+ 7.msms_cfmid_fragments_negative
  
- msms_cfmid_fragments_positive
+ 8.msms_cfmid_fragments_positive
 
 The main paper pipeline uses IR-only input, although the repository also contains scripts for multimodal and peak-table supplementary experiments.
 
 Example processed datasets used in the project:
 
- dataset_5.8k.parquet
+ 1.dataset_5.8k.parquet
 
- dataset_63k.parquet
+ 2.dataset_63k.parquet
 
- complex_total.parquet (used for augmentation-related experiments)
+ 3.complex_total.parquet (used for augmentation-related experiments)
 
 
 
@@ -108,23 +108,23 @@ Environment
 
 Recommended environment:
 
- Python 3.9–3.11
+ 1.Python 3.9–3.11
 
- PyTorch
+ 2.PyTorch
 
- pandas
+ 3.pandas
 
- numpy
+ 4.numpy
 
- RDKit
+ 5.RDKit
 
- tqdm
+ 6.tqdm
 
- pyarrow
+ 7.pyarrow
 
-matplotlib
+8.matplotlib
 
-scikit-learn
+9.scikit-learn
 
 Example installation:
 
