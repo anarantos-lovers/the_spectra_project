@@ -445,6 +445,24 @@ def decode_one(
     return _finalize_beam_to_smiles(final_beam, topk=topk_out, largest_component=largest_component)
 
 
+def ensure_parent_dir_for_file(path: str) -> str:
+    """
+    支持相对路径：
+    - pred.csv                -> 保存到当前目录，不报错
+    - results/pred.csv        -> 自动创建 results
+    - ./results/pred.csv      -> 自动创建 .\\results
+    - .\\results\\pred.csv    -> 自动创建对应目录
+    返回规范化后的路径（仍可为相对路径）
+    """
+    path = os.path.normpath(path)
+
+    parent = os.path.dirname(path)
+    if parent and parent not in (".", ""):
+        os.makedirs(parent, exist_ok=True)
+
+    return path
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--npz", required=True)
@@ -580,8 +598,9 @@ def main():
     print("\n===== DIAGNOSTICS =====")
     print("Empty prediction:", empty_pred, "rate:", empty_pred / max(1, n_total))
 
-    pd.DataFrame(rows).to_csv(args.out_csv, index=False, encoding="utf-8-sig")
-    print("Saved:", args.out_csv)
+    out_csv = ensure_parent_dir_for_file(args.out_csv)
+    pd.DataFrame(rows).to_csv(out_csv, index=False, encoding="utf-8-sig")
+    print("Saved:", out_csv)
 
 
 if __name__ == "__main__":
