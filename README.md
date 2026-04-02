@@ -218,14 +218,13 @@ For the strict-vocabulary experiment, build the vocabulary only from the corresp
 The main Stage-2 model is implemented in stage2_brics_model.py. It uses:
 
 fragment embedding 
-IR projection network 
-pairwise MLP scorer over fragment pairs 
-masked logits over invalid fragment positions 
+1.IR projection network 
+2.pairwise MLP scorer over fragment pairs 
+3.masked logits over invalid fragment positions 
 
 Train the main model with:
 
-python train_stage2_brics.py ^
-  --train train_mask3_63k_random0_0.parquet --val val_mask3_63k_random0_0.parquet --vocab vocab_global.tsv --ir_len 1024 --max_nodes 64 --epochs 60 --batch 64 --lr 1e-3 --device cuda --out best_stage2_random0.pt
+python train_stage2_brics.py --train train_mask3_63k_random0_0.parquet --val val_mask3_63k_random0_0.parquet --vocab vocab_global.tsv --ir_len 1024 --max_nodes 64 --epochs 60 --batch 64 --lr 1e-3 --device cuda --out best_stage2_random0.pt
   
 The trainer uses pair sampling to reduce the dominance of the NONE class in pairwise connection classification.
 
@@ -247,12 +246,12 @@ This performs constrained decoding and reports candidate-quality metrics such as
 6.1 Main reconstruction experiments
 
 These experiments correspond to the main paper setting:
-IR-only input 
-random split 
-scaffold-disjoint split 
-complexity-controlled evaluation (mask_sum >= 3) 
-pairwise MLP scorer 
-sparse export + constrained decoding 
+1.IR-only input 
+2.random split 
+3.scaffold-disjoint split 
+4.complexity-controlled evaluation (mask_sum >= 3) 
+5.pairwise MLP scorer 
+6.sparse export + constrained decoding 
 
 6.2 Strict training-vocabulary experiment
 
@@ -265,9 +264,9 @@ Use the same decoding/evaluation setting while supplying ground-truth BRICS frag
 6.4 Sparse export ablation
 
 Run sparse export with different topk values, for example:
-topk = 16 
-topk = 32 
-topk = 64 
+1.topk = 16 
+2.topk = 32 
+3.topk = 64 
 and decode each setting separately. This matches the sparse export ablation reported in the paper.
 
 6.5 Unfiltered vs filtered comparison
@@ -280,9 +279,9 @@ and compare reconstruction metrics. This corresponds to the complexity-controlle
 7.Transformer comparison experiment
 
 A separate Transformer-based comparison model is provided in:
-ablation_transformer_stage2_model.py 
-ablation_train_stage2_transformer.py 
-ablation_export_stage2_transformer_npz.py 
+1.ablation_transformer_stage2_model.py 
+2.ablation_train_stage2_transformer.py 
+3.ablation_export_stage2_transformer_npz.py 
 
 Example training:
 
@@ -298,10 +297,10 @@ This branch is intended as a controlled architectural comparison under the same 
 
    
 Separate multimodal ablation scripts are provided in:
-ablation_stage2_multimodal_dataset.py 
-ablation_stage2_multimodal_model.py 
-ablation_train_stage2_multimodal.py 
-ablation_export_stage2_multimodal_npz.py
+1.ablation_stage2_multimodal_dataset.py 
+2.ablation_stage2_multimodal_model.py 
+3.ablation_train_stage2_multimodal.py 
+4.ablation_export_stage2_multimodal_npz.py
 
 The multimodal dataset parser supports auxiliary spectral inputs such as:
 h_nmr_peaks 
@@ -322,10 +321,10 @@ These scripts support the modality-ablation analyses referenced in the main pape
 
 For supplementary experiments based on peak-table style inputs, use:
 
-si_peaktable_stage2_dataset.py 
-si_peaktable_stage2_model.py 
-si_peaktable_train.py 
-si_peaktable_export_npz.py 
+1.si_peaktable_stage2_dataset.py 
+2.si_peaktable_stage2_model.py 
+3.si_peaktable_train.py 
+4.si_peaktable_export_npz.py 
 
 Example training:
 
@@ -345,9 +344,9 @@ python analyze_scaffold_failures.py --pred_csv pred_random0_top16.csv --test_par
 
 This script summarizes scaffold-level Top-1 failure counts, Top-1 failure rates, Top-5 failure rates, and typical failed cases. It is used for the scaffold-level failure analyses reported in the Supporting Information.
 
-11.Mapping between paper sections and code
 
-Main paper
+11.Main paper
+
 preprocessing and filtering
 make_scaffold_dataset.py, make_mask_sum_csv.py, filter_dataset_by_mask_sum_keep_scaffold.py 
 
