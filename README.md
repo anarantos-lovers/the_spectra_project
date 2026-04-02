@@ -12,7 +12,7 @@ The main paper experiments are conducted in an IR-only setting with a pairwise M
 
  Overview
 
- Main paper setting
+Main paper setting
 
 IR-only input
 BRICS fragment vocabulary
@@ -28,7 +28,7 @@ multimodal ablation experiments
 peak-table supplementary experiments
 scaffold-level failure analysis for Supporting Information
 
- Repository contents
+Repository contents
 
 This repository includes code for:
 
@@ -48,7 +48,7 @@ multimodal ablation experiments
 peak-table supplementary experiments
 scaffold-level failure analysis for SI
 
- Data
+Data
 
 The experiments are based on a filtered dataset derived from a public multimodal spectroscopic dataset for chemistry. In this project, the processed dataset typically retains columns such as:
 
@@ -71,7 +71,7 @@ complex_total.parquet (used for augmentation-related experiments)
 
 
 
- Environment
+Environment
 
 Recommended environment:
 
