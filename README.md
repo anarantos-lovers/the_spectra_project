@@ -10,7 +10,7 @@ The main paper experiments are conducted in an IR-only setting with a pairwise M
 
 
 
- Overview
+Overview
 
 Main paper setting
 
@@ -21,7 +21,7 @@ pairwise connection prediction with a Stage-2 MLP model
 complexity-controlled evaluation on samples with mask_sum >= 3
 sparse export + constrained beam-search decoding
 
- Additional experiments included in this repository
+Additional experiments included in this repository
 
 Transformer-based comparison under the same fragment-connection formulation
 multimodal ablation experiments
@@ -104,7 +104,7 @@ The main workflow is:
  j.	run controlled ablations and SI analyses 
 
 
-1. Preprocessing
+Preprocessing
 1.1 Add scaffold annotations
 
 python make_scaffold_dataset.py --data dataset_63k.parquet --out dataset_with_scaffold_63k.parquet
@@ -129,7 +129,7 @@ python filter_dataset_by_mask_sum_keep_scaffold.py --data dataset_with_scaffold_
 
 This is the main filtered setting used in the paper.
 
-2. Data splitting
+Data splitting
 
 2.1 Random split
 
@@ -149,7 +149,7 @@ splits_mask3_scaffold_63k/train_scaffold_0.parquet
 splits_mask3_scaffold_63k/val_scaffold_0.parquet 
 splits_mask3_scaffold_63k/test_scaffold_0.parquet 
 
-3. BRICS vocabulary construction
+BRICS vocabulary construction
 
 3.1 Global vocabulary
 
@@ -161,7 +161,7 @@ This builds a BRICS fragment vocabulary from the training file. The vocabulary s
 
 For the strict-vocabulary experiment, build the vocabulary only from the corresponding training split, and keep that vocabulary fixed during training, export, and decoding. This matches the strict train-only vocabulary analysis described in the paper.
 
-4. Main model training (IR-only MLP)
+Main model training (IR-only MLP)
 
 The main Stage-2 model is implemented in stage2_brics_model.py. It uses:
 
@@ -177,7 +177,7 @@ python train_stage2_brics.py ^
   
 The trainer uses pair sampling to reduce the dominance of the NONE class in pairwise connection classification.
 
-5. Sparse export and decoding
+Sparse export and decoding
    
 5.1 Export sparse pairwise logits
    
@@ -190,7 +190,7 @@ python denovo_decode_eval_from_npz_fast_v1.py --npz npz_random0_top16.npz --test
 
 This performs constrained decoding and reports candidate-quality metrics such as Top-1, Top-5, validity, empty prediction rate, and Tanimoto-related reconstruction quality.
 
-6. Main paper experiments
+Main paper experiments
    
 6.1 Main reconstruction experiments
 
@@ -225,7 +225,7 @@ the unfiltered scaffold-annotated dataset
 the filtered mask_sum >= 3 subset 
 and compare reconstruction metrics. This corresponds to the complexity-controlled evaluation analysis in the paper.
 
-8. Transformer comparison experiment
+Transformer comparison experiment
 
 A separate Transformer-based comparison model is provided in:
 ablation_transformer_stage2_model.py 
@@ -242,7 +242,7 @@ python ablation_export_stage2_transformer_npz.py --ckpt best_transformer_random0
   
 This branch is intended as a controlled architectural comparison under the same fragment-connection formulation.
 
-9. Multimodal ablation experiment
+Multimodal ablation experiment
 
    
 Separate multimodal ablation scripts are provided in:
@@ -285,7 +285,7 @@ python si_peaktable_export_npz.py --ckpt best_si_peaktable_random0.pt --data tes
   
 This branch is intended for supplementary multimodal peak-table experiments rather than the main IR-only paper setting.
 
-11. Scaffold-level failure analysis for SI
+Scaffold-level failure analysis for SI
 
 Use:
 
@@ -293,7 +293,7 @@ python analyze_scaffold_failures.py --pred_csv pred_random0_top16.csv --test_par
 
 This script summarizes scaffold-level Top-1 failure counts, Top-1 failure rates, Top-5 failure rates, and typical failed cases. It is used for the scaffold-level failure analyses reported in the Supporting Information.
 
-11. Mapping between paper sections and code
+Mapping between paper sections and code
 
 Main paper
 preprocessing and filtering
@@ -322,7 +322,7 @@ si_peaktable_stage2_dataset.py, si_peaktable_stage2_model.py, si_peaktable_train
 scaffold failure SI
 analyze_scaffold_failures.py 
 
-12. Notes
+Notes
 The main paper claims should be reproduced with the IR-only Stage-2 MLP pipeline, not with the Transformer or multimodal branches. 
 Transformer and multimodal scripts are intended for controlled comparison and supplementary analysis. 
 Supporting Information includes scaffold-level failure portraits and supplementary peak-table analyses. 
