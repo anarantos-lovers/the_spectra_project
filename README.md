@@ -15,17 +15,25 @@ Overview
 Main paper setting
 
 IR-only input
+
 BRICS fragment vocabulary
+
 pairwise connection prediction with a Stage-2 MLP model
+
 257 connection classes (0-255 valid BRICS type pairs, 256 = NONE)
+
 complexity-controlled evaluation on samples with mask_sum >= 3
+
 sparse export + constrained beam-search decoding
 
 Additional experiments included in this repository
 
 Transformer-based comparison under the same fragment-connection formulation
+
 multimodal ablation experiments
+
 peak-table supplementary experiments
+
 scaffold-level failure analysis for Supporting Information
 
 Repository contents
@@ -33,19 +41,33 @@ Repository contents
 This repository includes code for:
 
 dataset preprocessing and scaffold annotation
+
 BRICS fragment-count (mask_sum) computation
+
 complexity-controlled filtering with mask_sum >= 3
+
 random and scaffold-disjoint data splitting
+
 BRICS vocabulary construction
+
 IR-only Stage-2 training with pairwise MLP scoring
+
 sparse pairwise-logit export
+
 constrained beam-search decoding and evaluation
+
 strict-vocabulary experiments
+
 oracle-fragment experiments
+
 sparse export ablation (top16 / top32 / top64)
+
 Transformer-based comparison experiments
+
 multimodal ablation experiments
+
 peak-table supplementary experiments
+
 scaffold-level failure analysis for SI
 
 Data
@@ -54,11 +76,17 @@ The experiments are based on a filtered dataset derived from a public multimodal
 
 smiles
 molecular_formula
+
 ir_spectra
+
 h_nmr_peaks
+
 c_nmr_peaks
+
 hsqc_nmr_peaks
+
 msms_cfmid_fragments_negative
+
 msms_cfmid_fragments_positive
 
 The main paper pipeline uses IR-only input, although the repository also contains scripts for multimodal and peak-table supplementary experiments.
@@ -66,7 +94,9 @@ The main paper pipeline uses IR-only input, although the repository also contain
 Example processed datasets used in the project:
 
 dataset_5.8k.parquet
+
 dataset_63k.parquet
+
 complex_total.parquet (used for augmentation-related experiments)
 
 
@@ -76,13 +106,21 @@ Environment
 Recommended environment:
 
 Python 3.9–3.11
+
 PyTorch
+
 pandas
+
 numpy
+
 RDKit
+
 tqdm
+
 pyarrow
+
 matplotlib
+
 scikit-learn
 
 Example installation:
@@ -92,15 +130,25 @@ pip install torch pandas numpy pyarrow tqdm matplotlib scikit-learn
 
 Main workflow
 The main workflow is:
+
  a.	prepare the dataset 
+
  b.	add scaffold annotations 
+
  c.	compute mask_sum 
+
  d.	filter to mask_sum >= 3 
+ 
  e.	build BRICS vocabulary 
+
  f.	generate random or scaffold-disjoint splits 
+
  g.	train the IR-only Stage-2 MLP model 
+
  h.	export sparse pairwise logits 
+
  i.	decode and evaluate 
+
  j.	run controlled ablations and SI analyses 
 
 
