@@ -14,62 +14,62 @@ Overview
 
 Main paper setting:
 
- IR-only input
+ 1.IR-only input
 
- BRICS fragment vocabulary
+ 2.BRICS fragment vocabulary
 
- pairwise connection prediction with a Stage-2 MLP model
+ 3.pairwise connection prediction with a Stage-2 MLP model
 
- 257 connection classes (0-255 valid BRICS type pairs, 256 = NONE)
+ 4.257 connection classes (0-255 valid BRICS type pairs, 256 = NONE)
 
- complexity-controlled evaluation on samples with mask_sum >= 3
+ 5.complexity-controlled evaluation on samples with mask_sum >= 3
  
- sparse export + constrained beam-search decoding
+ 6.sparse export + constrained beam-search decoding
 
 Additional experiments included in this repository
 
- Transformer-based comparison under the same fragment-connection formulation
+ 1.Transformer-based comparison under the same fragment-connection formulation
 
- multimodal ablation experiments
+ 2.multimodal ablation experiments
 
- peak-table supplementary experiments
+ 3.peak-table supplementary experiments
 
- scaffold-level failure analysis for Supporting Information
+ 4.scaffold-level failure analysis for Supporting Information
 
 
 Repository contents
 
 This repository includes code for:
 
- dataset preprocessing and scaffold annotation
+ 1.dataset preprocessing and scaffold annotation
 
- BRICS fragment-count (mask_sum) computation
+ 2.BRICS fragment-count (mask_sum) computation
 
- complexity-controlled filtering with mask_sum >= 3
+ 3.complexity-controlled filtering with mask_sum >= 3
 
- scaffold-disjoint data splitting
+ 4.scaffold-disjoint data splitting
 
- BRICS vocabulary construction
+ 5.BRICS vocabulary construction
 
- IR-only Stage-2 training with pairwise MLP scoring
+ 6.IR-only Stage-2 training with pairwise MLP scoring
 
- sparse pairwise-logit export
+ 7.sparse pairwise-logit export
 
- constrained beam-search decoding and evaluation
+ 8.constrained beam-search decoding and evaluation
 
- strict-vocabulary experiments
+ 9.strict-vocabulary experiments
 
- oracle-fragment experiments
+ 10.oracle-fragment experiments
 
- sparse export ablation (top16 / top32 / top64)
+ 11.sparse export ablation (top16 / top32 / top64)
 
- Transformer-based comparison experiments
+ 12.Transformer-based comparison experiments
 
- multimodal ablation experiments
+ 13.multimodal ablation experiments
 
- peak-table supplementary experiments
+ 14.peak-table supplementary experiments
 
- scaffold-level failure analysis for SI
+ 15.scaffold-level failure analysis for SI
 
 
 Data
