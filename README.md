@@ -14,92 +14,93 @@ Overview
 
 Main paper setting:
 
-IR-only input
+ IR-only input
 
-BRICS fragment vocabulary
+ BRICS fragment vocabulary
 
-pairwise connection prediction with a Stage-2 MLP model
+ pairwise connection prediction with a Stage-2 MLP model
 
-257 connection classes (0-255 valid BRICS type pairs, 256 = NONE)
+ 257 connection classes (0-255 valid BRICS type pairs, 256 = NONE)
 
-complexity-controlled evaluation on samples with mask_sum >= 3
-
-sparse export + constrained beam-search decoding
+ complexity-controlled evaluation on samples with mask_sum >= 3
+ 
+ sparse export + constrained beam-search decoding
 
 Additional experiments included in this repository
 
-Transformer-based comparison under the same fragment-connection formulation
+ Transformer-based comparison under the same fragment-connection formulation
 
-multimodal ablation experiments
+ multimodal ablation experiments
 
-peak-table supplementary experiments
+ peak-table supplementary experiments
 
-scaffold-level failure analysis for Supporting Information
+ scaffold-level failure analysis for Supporting Information
 
-/n
+
 Repository contents
 
 This repository includes code for:
 
-dataset preprocessing and scaffold annotation
+ dataset preprocessing and scaffold annotation
 
-BRICS fragment-count (mask_sum) computation
+ BRICS fragment-count (mask_sum) computation
 
-complexity-controlled filtering with mask_sum >= 3
+ complexity-controlled filtering with mask_sum >= 3
 
-random and scaffold-disjoint data splitting
+ scaffold-disjoint data splitting
 
-BRICS vocabulary construction
+ BRICS vocabulary construction
 
-IR-only Stage-2 training with pairwise MLP scoring
+ IR-only Stage-2 training with pairwise MLP scoring
 
-sparse pairwise-logit export
+ sparse pairwise-logit export
 
-constrained beam-search decoding and evaluation
+ constrained beam-search decoding and evaluation
 
-strict-vocabulary experiments
+ strict-vocabulary experiments
 
-oracle-fragment experiments
+ oracle-fragment experiments
 
-sparse export ablation (top16 / top32 / top64)
+ sparse export ablation (top16 / top32 / top64)
 
-Transformer-based comparison experiments
+ Transformer-based comparison experiments
 
-multimodal ablation experiments
+ multimodal ablation experiments
 
-peak-table supplementary experiments
+ peak-table supplementary experiments
 
-scaffold-level failure analysis for SI
+ scaffold-level failure analysis for SI
 
 
 Data
 
 The experiments are based on a filtered dataset derived from a public multimodal spectroscopic dataset for chemistry. In this project, the processed dataset typically retains columns such as:
 
-smiles
-molecular_formula
+ smiles
 
-ir_spectra
+ molecular_formula
 
-h_nmr_peaks
+ ir_spectra
 
-c_nmr_peaks
+ h_nmr_peaks
 
-hsqc_nmr_peaks
+ c_nmr_peaks
 
-msms_cfmid_fragments_negative
+ hsqc_nmr_peaks
 
-msms_cfmid_fragments_positive
+ msms_cfmid_fragments_negative
+ 
+ msms_cfmid_fragments_positive
 
 The main paper pipeline uses IR-only input, although the repository also contains scripts for multimodal and peak-table supplementary experiments.
 
 Example processed datasets used in the project:
 
-dataset_5.8k.parquet
+ dataset_5.8k.parquet
 
-dataset_63k.parquet
+ dataset_63k.parquet
 
-complex_total.parquet (used for augmentation-related experiments)
+ complex_total.parquet (used for augmentation-related experiments)
 
 
 
@@ -107,19 +108,19 @@ Environment
 
 Recommended environment:
 
-Python 3.9–3.11
+ Python 3.9–3.11
 
-PyTorch
+ PyTorch
 
-pandas
+ pandas
 
-numpy
+ numpy
 
-RDKit
+ RDKit
 
-tqdm
+ tqdm
 
-pyarrow
+ pyarrow
 
 matplotlib
 
@@ -133,25 +134,25 @@ pip install torch pandas numpy pyarrow tqdm matplotlib scikit-learn
 Main workflow
 The main workflow is:
 
- a.	prepare the dataset 
+  a.	prepare the dataset 
 
- b.	add scaffold annotations 
+  b.	add scaffold annotations 
 
- c.	compute mask_sum 
+  c.	compute mask_sum 
 
- d.	filter to mask_sum >= 3 
+  d.	filter to mask_sum >= 3 
  
- e.	build BRICS vocabulary 
+  e.	build BRICS vocabulary 
 
- f.	generate random or scaffold-disjoint splits 
+  f.	generate random or scaffold-disjoint splits 
 
- g.	train the IR-only Stage-2 MLP model 
+  g.	train the IR-only Stage-2 MLP model 
 
- h.	export sparse pairwise logits 
+  h.	export sparse pairwise logits 
 
- i.	decode and evaluate 
+  i.	decode and evaluate 
 
- j.	run controlled ablations and SI analyses 
+  j.	run controlled ablations and SI analyses 
 
 
 1.Preprocessing
