@@ -92,16 +92,17 @@ pip install torch pandas numpy pyarrow tqdm matplotlib scikit-learn
 
 Main workflow
 The main workflow is:
-1.	prepare the dataset 
-2.	add scaffold annotations 
-3.	compute mask_sum 
-4.	filter to mask_sum >= 3 
-5.	build BRICS vocabulary 
-6.	generate random or scaffold-disjoint splits 
-7.	train the IR-only Stage-2 MLP model 
-8.	export sparse pairwise logits 
-9.	decode and evaluate 
-10.	run controlled ablations and SI analyses 
+ 1.	prepare the dataset 
+ 2.	add scaffold annotations 
+ 3.	compute mask_sum 
+ 4.	filter to mask_sum >= 3 
+ 5.	build BRICS vocabulary 
+ 6.	generate random or scaffold-disjoint splits 
+ 7.	train the IR-only Stage-2 MLP model 
+ 8.	export sparse pairwise logits 
+ 9.	decode and evaluate 
+ 10.	run controlled ablations and SI analyses 
+
 
 1. Preprocessing
 1.1 Add scaffold annotations
