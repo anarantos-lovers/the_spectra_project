@@ -105,6 +105,7 @@ The main workflow is:
 
 
 1.Preprocessing
+
 1.1 Add scaffold annotations
 
 python make_scaffold_dataset.py --data dataset_63k.parquet --out dataset_with_scaffold_63k.parquet
