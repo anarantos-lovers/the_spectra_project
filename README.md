@@ -187,6 +187,7 @@ For the strict-vocabulary experiment, build the vocabulary only from the corresp
 4. Main model training (IR-only MLP)
 
 The main Stage-2 model is implemented in stage2_brics_model.py. It uses:
+
 1.	Fragment embedding 
 2.	IR projection network 
 3.	Pairwise MLP scorer over fragment pairs 
@@ -245,7 +246,9 @@ These experiments correspond to the main paper setting:
 3.	Scaffold-disjoint split 
 4.	Complexity-controlled evaluation (mask_sum >= 3) 
 5.	Pairwise MLP scorer 
-6.	Sparse export + constrained decoding 
+6.	Sparse export + constrained decoding
+
+   
 6.2 Strict training-vocabulary experiment
   	
 python train_stage2_brics.py ^
@@ -316,8 +319,10 @@ and decode each setting separately.
 6.5 Unfiltered vs filtered comparison
 
 To reproduce the complexity-control comparison, run the same pipeline on:
+
 •	the unfiltered scaffold-annotated dataset 
 •	the filtered mask_sum >= 3 subset 
+
 and compare reconstruction metrics.
 
 Example (unfiltered):
