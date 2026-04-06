@@ -93,7 +93,7 @@ Example installation:
 
 bash
 pip install torch pandas numpy pyarrow tqdm matplotlib scikit-learn
-________________________________________
+
 Main workflow
 The main workflow is:
 1.	Prepare the dataset 
@@ -106,68 +106,94 @@ The main workflow is:
 8.	Export sparse pairwise logits 
 9.	Decode and evaluate 
 10.	Run controlled ablations and SI analyses 
-________________________________________
+
 1. Preprocessing
+
 1.1 Add scaffold annotations
+
 python make_scaffold_dataset.py ^
   --data dataset_63k.parquet ^
   --out dataset_with_scaffold_63k.parquet
+
 This script computes Bemis–Murcko scaffolds from smiles, removes invalid scaffold entries, and saves a scaffold-annotated parquet file.
+
 1.2 Compute fragment-node count (mask_sum)
+
 python make_mask_sum_csv.py ^
   --data dataset_with_scaffold_63k.parquet ^
   --out_csv mask_sum_dataset_with_scaffold_63k.csv
+  
 mask_sum is computed from BRICS decomposition and is used for complexity-controlled evaluation.
+
 1.3 Filter to the complexity-controlled subset (mask_sum >= 3)
+
 python filter_dataset_by_mask_sum_keep_scaffold.py ^
   --data dataset_with_scaffold_63k.parquet ^
   --mask_csv mask_sum_dataset_with_scaffold_63k.csv ^
   --min_mask_sum 3 ^
   --out dataset_mask3_with_scaffold_63k.parquet
 This is the main filtered setting used in the paper.
-________________________________________
+
+
 2. Data splitting
+  
 2.1 Random split
+
 python random_split_from_scaffold_ds.py ^
   --data dataset_mask3_with_scaffold_63k.parquet ^
   --seed 0 ^
   --out_prefix mask3_63k_random0
+  
 This produces files such as:
 •	train_mask3_63k_random0_0.parquet 
 •	val_mask3_63k_random0_0.parquet 
 •	test_mask3_63k_random0_0.parquet 
+
 2.2 Scaffold-disjoint split
+
 python scaffold_kfold_split.py ^
   --data dataset_mask3_with_scaffold_63k.parquet ^
   --seed 0 ^
   --n_splits 10 ^
   --outdir splits_mask3_scaffold_63k
+  
 This produces files such as:
 •	splits_mask3_scaffold_63k/train_scaffold_0.parquet 
 •	splits_mask3_scaffold_63k/val_scaffold_0.parquet 
 •	splits_mask3_scaffold_63k/test_scaffold_0.parquet 
-________________________________________
+
+
 3. BRICS vocabulary construction
+   
 3.1 Global vocabulary
+
 python build_brics_vocab_from_train.py ^
   --train dataset_mask3_with_scaffold_63k.parquet ^
   --out_tsv vocab_global_63k.tsv ^
   --min_count 1
+  
 This builds a BRICS fragment vocabulary from the whole filtered dataset. The vocabulary stores fragment SMILES and counts, and the loader reserves special tokens for PAD and UNK.
+
 3.2 Strict-vocabulary setting
+
 python build_brics_vocab_from_train.py ^
   --train train_mask3_63k_random0_0.parquet ^
   --out_tsv vocab_strict_random0.tsv ^
   --min_count 1
+  
 For the strict-vocabulary experiment, build the vocabulary only from the corresponding training split and keep that vocabulary fixed during training, export, and decoding.
-________________________________________
+
+
 4. Main model training (IR-only MLP)
+
 The main Stage-2 model is implemented in stage2_brics_model.py. It uses:
 1.	Fragment embedding 
 2.	IR projection network 
 3.	Pairwise MLP scorer over fragment pairs 
 4.	Masked logits over invalid fragment positions 
+
 Train the main model with:
+
 python train_stage2_brics.py ^
   --train train_mask3_63k_random0_0.parquet ^
   --val val_mask3_63k_random0_0.parquet ^
@@ -177,10 +203,14 @@ python train_stage2_brics.py ^
   --lr 1e-3 ^
   --none_weight 0.0005 ^
   --out best_stage2_random0_mask3_w0005.pt
+  
 The trainer uses pair sampling to reduce the dominance of the NONE class in pairwise connection classification.
-________________________________________
+
+
 5. Sparse export and decoding
+   
 5.1 Export sparse pairwise logits
+   
 python export_stage2_logits_to_npz_dataset.py ^
   --ckpt best_stage2_random0_mask3_w0005.pt ^
   --data test_mask3_63k_random0_0.parquet ^
@@ -191,7 +221,9 @@ python export_stage2_logits_to_npz_dataset.py ^
   --topk 32 ^
   --dtype float16 ^
   --cleanup_tmp
+  
 5.2 Decode and evaluate
+
 python denovo_decode_eval_from_npz_fast_v1.py ^
   --npz npz_random0_mask3_w0005_top32.npz ^
   --test test_mask3_63k_random0_0.parquet ^
@@ -200,10 +232,13 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --top_edge_m 4096 ^
   --top_type_r 32 ^
   --out_csv pred_random0_mask3_w0005_top32.csv
+  
 This performs constrained decoding and reports candidate-quality metrics such as Top-1, Top-5, validity, empty prediction rate, and Tanimoto-related reconstruction quality.
-________________________________________
+
 6. Main paper experiments
+   
 6.1 Main reconstruction experiments
+   
 These experiments correspond to the main paper setting:
 1.	IR-only input 
 2.	Random split 
@@ -212,6 +247,7 @@ These experiments correspond to the main paper setting:
 5.	Pairwise MLP scorer 
 6.	Sparse export + constrained decoding 
 6.2 Strict training-vocabulary experiment
+  	
 python train_stage2_brics.py ^
   --train train_mask3_63k_random0_0.parquet ^
   --val val_mask3_63k_random0_0.parquet ^
@@ -241,8 +277,11 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --top_edge_m 4096 ^
   --top_type_r 32 ^
   --out_csv pred_strict_random0_mask3_w0005_top32.csv
+  
 This corresponds to the strict-vocabulary analysis in the paper.
+
 6.3 Oracle-fragment experiment
+
 python export_oracle_stage2_npz.py ^
   --ckpt best_stage2_random0_mask3_w0005.pt ^
   --data test_mask3_63k_random0_0.parquet ^
@@ -262,19 +301,27 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --top_edge_m 4096 ^
   --top_type_r 32 ^
   --out_csv pred_mask3_random0_w0005_oracle_top32.csv
+  
 This experiment supplies ground-truth BRICS fragments during evaluation and is used to distinguish fragment-coverage error from connection-prediction error.
+
 6.4 Sparse export ablation
+
 Run sparse export with different topk values, for example:
 1.	topk = 16 
 2.	topk = 32 
-3.	topk = 64 
+3.	topk = 64
+   
 and decode each setting separately.
+
 6.5 Unfiltered vs filtered comparison
+
 To reproduce the complexity-control comparison, run the same pipeline on:
 •	the unfiltered scaffold-annotated dataset 
 •	the filtered mask_sum >= 3 subset 
 and compare reconstruction metrics.
+
 Example (unfiltered):
+
 python make_scaffold_dataset.py ^
   --data dataset_63k.parquet ^
   --out dataset_with_scaffold_63k.parquet
@@ -318,13 +365,18 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --top_edge_m 4096 ^
   --top_type_r 32 ^
   --out_csv pred_63k_unfiltered_random0_w0005_top32.csv
-________________________________________
+  
+
+
 7. Transformer comparison experiment
+   
 A separate Transformer-based comparison model is provided in:
 1.	ablation_transformer_stage2_model.py 
 2.	ablation_train_stage2_transformer.py 
-3.	ablation_export_stage2_transformer_npz.py 
+3.	ablation_export_stage2_transformer_npz.py
+   
 Example:
+
 python ablation_train_stage2_transformer.py ^
   --train train_mask3_63k_random0_0.parquet ^
   --val val_mask3_63k_random0_0.parquet ^
@@ -354,8 +406,11 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --top_edge_m 4096 ^
   --top_type_r 32 ^
   --out_csv pred_transformer_random0_mask3_w0005_top32.csv
-________________________________________
+  
+
+
 8. Multimodal ablation experiment
+   
 Separate multimodal ablation scripts are provided in:
 1.	ablation_stage2_multimodal_dataset.py 
 2.	ablation_stage2_multimodal_model.py 
@@ -366,6 +421,7 @@ The multimodal dataset parser supports auxiliary spectral inputs such as:
 •	c_nmr_peaks 
 •	hsqc_nmr_peaks 
 Example:
+
 python ablation_train_stage2_multimodal.py ^
   --train train_mask3_63k_random0_0.parquet ^
   --val val_mask3_63k_random0_0.parquet ^
@@ -399,14 +455,16 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --top_type_r 32 ^
   --out_csv pred_multimodal_full_random0_mask3_w0005_top32.csv
 These scripts support the modality-ablation analyses referenced in the main paper.
-________________________________________
+
 9. Peak-table supplementary experiments
 For supplementary experiments based on peak-table style inputs, use:
 1.	si_peaktable_stage2_dataset.py 
 2.	si_peaktable_stage2_model.py 
 3.	si_peaktable_train.py 
-4.	si_peaktable_export_npz.py 
+4.	si_peaktable_export_npz.py
+
 Example training:
+
 python si_peaktable_train.py ^
   --train train_mask3_63k_random0_0.parquet ^
   --val val_mask3_63k_random0_0.parquet ^
@@ -421,43 +479,55 @@ python si_peaktable_train.py ^
   --lr 1e-3 ^
   --device cuda ^
   --out best_si_peaktable_random0.pt
+  
 Example export:
+
 python si_peaktable_export_npz.py ^
   --ckpt best_si_peaktable_random0.pt ^
   --data test_mask3_63k_random0_0.parquet ^
   --out npz_si_peaktable_random0_top32.npz ^
   --topk 32 ^
   --dtype float16
+  
 This branch is intended for supplementary multimodal peak-table experiments rather than the main IR-only paper setting.
-________________________________________
+
 10. Scaffold-level failure analysis for SI
+    
 python analyze_scaffold_failures.py ^
   --pred_csv pred_random0_mask3_w0005_top32.csv ^
   --test_parquet test_mask3_63k_random0_0.parquet ^
   --outdir scaffold_failure_random0
+  
 This script summarizes scaffold-level Top-1 failure counts, Top-1 failure rates, Top-5 failure rates, and typical failed cases. It is used for the scaffold-level failure analyses reported in the Supporting Information.
-________________________________________
+
 11. Main paper code map
 Main paper
 •	preprocessing and filtering
-make_scaffold_dataset.py, make_mask_sum_csv.py, filter_dataset_by_mask_sum_keep_scaffold.py 
+make_scaffold_dataset.py, make_mask_sum_csv.py, filter_dataset_by_mask_sum_keep_scaffold.py
+
 •	split generation
-random_split_from_scaffold_ds.py, scaffold_kfold_split.py 
+random_split_from_scaffold_ds.py, scaffold_kfold_split.py
+
 •	main IR-only model
-stage2_brics_dataset.py, stage2_brics_model.py, train_stage2_brics.py 
+stage2_brics_dataset.py, stage2_brics_model.py, train_stage2_brics.py
+
 •	sparse export and decoding
 export_stage2_logits_to_npz_dataset.py, denovo_decode_eval_from_npz_fast_v1.py 
 Ablation / supplementary experiments
+
 •	Transformer comparison
-ablation_transformer_stage2_model.py, ablation_train_stage2_transformer.py, ablation_export_stage2_transformer_npz.py 
+ablation_transformer_stage2_model.py, ablation_train_stage2_transformer.py, ablation_export_stage2_transformer_npz.py
+
 •	multimodal ablation
 ablation_stage2_multimodal_dataset.py, ablation_stage2_multimodal_model.py, ablation_train_stage2_multimodal.py, ablation_export_stage2_multimodal_npz.py 
+
 •	peak-table SI experiments
 si_peaktable_stage2_dataset.py, si_peaktable_stage2_model.py, si_peaktable_train.py, si_peaktable_export_npz.py 
+
 •	scaffold failure SI
 analyze_scaffold_failures.py 
 
-12. Notes
+13. Notes
 The main paper claims should be reproduced with the IR-only Stage-2 MLP pipeline, not with the Transformer or multimodal branches.
 Transformer and multimodal scripts are intended for controlled comparison and supplementary analysis.
 Supporting Information includes scaffold-level failure portraits and supplementary peak-table analyses.
