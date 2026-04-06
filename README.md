@@ -461,42 +461,8 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --out_csv pred_multimodal_full_random0_mask3_w0005_top32.csv
 These scripts support the modality-ablation analyses referenced in the main paper.
 
-9. Peak-table supplementary experiments
-For supplementary experiments based on peak-table style inputs, use:
-1.	si_peaktable_stage2_dataset.py 
-2.	si_peaktable_stage2_model.py 
-3.	si_peaktable_train.py 
-4.	si_peaktable_export_npz.py
 
-Example training:
-
-python si_peaktable_train.py ^
-  --train train_mask3_63k_random0_0.parquet ^
-  --val val_mask3_63k_random0_0.parquet ^
-  --vocab vocab_global.tsv ^
-  --ir_len 1024 ^
-  --max_nodes 64 ^
-  --use_h1 ^
-  --use_c13 ^
-  --use_hsqc ^
-  --epochs 60 ^
-  --batch 64 ^
-  --lr 1e-3 ^
-  --device cuda ^
-  --out best_si_peaktable_random0.pt
-  
-Example export:
-
-python si_peaktable_export_npz.py ^
-  --ckpt best_si_peaktable_random0.pt ^
-  --data test_mask3_63k_random0_0.parquet ^
-  --out npz_si_peaktable_random0_top32.npz ^
-  --topk 32 ^
-  --dtype float16
-  
-This branch is intended for supplementary multimodal peak-table experiments rather than the main IR-only paper setting.
-
-10. Scaffold-level failure analysis for SI
+9. Scaffold-level failure analysis for SI
     
 python analyze_scaffold_failures.py ^
   --pred_csv pred_random0_mask3_w0005_top32.csv ^
@@ -505,34 +471,41 @@ python analyze_scaffold_failures.py ^
   
 This script summarizes scaffold-level Top-1 failure counts, Top-1 failure rates, Top-5 failure rates, and typical failed cases. It is used for the scaffold-level failure analyses reported in the Supporting Information.
 
-11. Main paper code map
+10. Main paper code map
 Main paper
 •	preprocessing and filtering
 make_scaffold_dataset.py, make_mask_sum_csv.py, filter_dataset_by_mask_sum_keep_scaffold.py
 
 •	split generation
+
 random_split_from_scaffold_ds.py, scaffold_kfold_split.py
 
 •	main IR-only model
+
 stage2_brics_dataset.py, stage2_brics_model.py, train_stage2_brics.py
 
 •	sparse export and decoding
+
 export_stage2_logits_to_npz_dataset.py, denovo_decode_eval_from_npz_fast_v1.py 
 Ablation / supplementary experiments
 
 •	Transformer comparison
+
 ablation_transformer_stage2_model.py, ablation_train_stage2_transformer.py, ablation_export_stage2_transformer_npz.py
 
 •	multimodal ablation
+
 ablation_stage2_multimodal_dataset.py, ablation_stage2_multimodal_model.py, ablation_train_stage2_multimodal.py, ablation_export_stage2_multimodal_npz.py 
 
 •	peak-table SI experiments
+
 si_peaktable_stage2_dataset.py, si_peaktable_stage2_model.py, si_peaktable_train.py, si_peaktable_export_npz.py 
 
 •	scaffold failure SI
+
 analyze_scaffold_failures.py 
 
-13. Notes
+12. Notes
 The main paper claims should be reproduced with the IR-only Stage-2 MLP pipeline, not with the Transformer or multimodal branches.
 Transformer and multimodal scripts are intended for controlled comparison and supplementary analysis.
 Supporting Information includes scaffold-level failure portraits and supplementary peak-table analyses.
