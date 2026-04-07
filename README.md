@@ -1,5 +1,5 @@
  A Two-Stage Fragment-Connection Framework for Infrared-Spectrum-Driven Molecular Structure Elucidation
-
+ 
 This repository contains the code and workflow used in our paper:
 
 A Two-Stage Fragment-Connection Framework for Infrared-Spectrum-Driven Molecular Structure Elucidation
@@ -8,7 +8,7 @@ The project formulates molecular structure elucidation as a BRICS fragment-conne
 
 The main paper experiments are conducted in an IR-only setting with a pairwise MLP scorer. The repository also includes separate branches for Transformer comparison, multimodal ablation, peak-table supplementary experiments, and scaffold-level failure analysis for Supporting Information.
 
-
+Main paper baseline uses the filtered (mask_sum >= 3) IR-only setting with a global vocabulary; strict-vocabulary, oracle-fragment, multimodal, transformer, and unfiltered experiments are separate controlled analyses.
 
  Overview
 
@@ -106,6 +106,19 @@ The main workflow is:
 8.	Export sparse pairwise logits 
 9.	Decode and evaluate 
 10.	Run controlled ablations and SI analyses 
+
+If RDKit fails to import on Linux servers with errors related to GLIBCXX or libstdc++.so.6, try the following:
+
+1. Install runtime libraries into the conda environment:
+conda install -n torch_final -c conda-forge libstdcxx-ng libgcc-ng -y
+
+2. Prioritize the conda environment libraries:
+export LD_LIBRARY_PATH=/root/miniconda3/envs/torch_final/lib:$LD_LIBRARY_PATH
+
+3. Test RDKit separately:
+python -c "from rdkit import Chem; print('RDKit ok')"
+
+If the RDKit test passes, proceed with the preprocessing scripts such as make_scaffold_dataset.py and make_mask_sum_csv.py.
 
 1. Preprocessing
 
