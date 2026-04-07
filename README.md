@@ -145,6 +145,7 @@ python filter_dataset_by_mask_sum_keep_scaffold.py ^
   --mask_csv mask_sum_dataset_with_scaffold_63k.csv ^
   --min_mask_sum 3 ^
   --out dataset_mask3_with_scaffold_63k.parquet
+  
 This is the main filtered setting used in the paper.
 
 
