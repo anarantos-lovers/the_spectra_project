@@ -518,7 +518,8 @@ si_peaktable_stage2_dataset.py, si_peaktable_stage2_model.py, si_peaktable_train
 
 analyze_scaffold_failures.py 
 
-12. Notes
+11. Notes
+    
 The main paper claims should be reproduced with the IR-only Stage-2 MLP pipeline, not with the Transformer or multimodal branches.
 Transformer and multimodal scripts are intended for controlled comparison and supplementary analysis.
 Supporting Information includes scaffold-level failure portraits and supplementary peak-table analyses.
