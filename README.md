@@ -48,7 +48,10 @@ This repository includes code for:
 12. Transformer-based comparison experiments  
 13. Multimodal ablation experiments  
 14. Peak-table supplementary experiments  
-15. Scaffold-level failure analysis for SI  
+15. Scaffold-level failure analysis for SI
+16. Infrared nearest-neighbor baseline analysis
+17. Infrared perturbation diagnostic experiments
+18. Fragment-vocabulary generalization analysis
 
 
 
@@ -386,7 +389,6 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   --out_csv pred_63k_unfiltered_random0_w0005_top32.csv
   
 
-
 7. Transformer comparison experiment
    
 A separate Transformer-based comparison model is provided in:
@@ -476,8 +478,86 @@ python denovo_decode_eval_from_npz_fast_v1.py ^
   
 These scripts support the modality-ablation analyses referenced in the main paper.
 
+9. Additional diagnostic experiments
+The repository includes additional diagnostic analyses introduced during manuscript revision.
 
-9. Scaffold-level failure analysis for SI
+9.1 Infrared nearest-neighbor baseline
+The infrared nearest-neighbor baseline evaluates whether raw infrared spectral similarity alone can recover molecular structures.
+
+The script:
+IR-NN_baseline.py
+retrieves the nearest training spectra in the raw IR feature space and reports Top-1 and Top-5 exact-match retrieval accuracy.
+
+Run:
+python IR-NN_baseline.py
+
+
+This baseline is used to distinguish direct spectral similarity retrieval from the proposed fragment-connection reconstruction framework.
+
+
+9.2 Infrared perturbation analysis
+
+The infrared perturbation experiment evaluates the contribution of spectral conditioning by modifying the IR input while keeping the fragment representation and decoding procedure unchanged.
+
+The script:
+export_stage2_ir_ablation_STABLE.py
+supports four settings:
+
+none:
+original IR input
+
+zero:
+all IR intensities replaced with zero
+
+noise:
+Gaussian noise perturbation of IR input
+
+shuffle_dim:
+random permutation of IR dimensions
+
+Example:
+
+python export_stage2_ir_ablation_stable.py ^
+--ckpt best_stage2_random0_mask3_w0005.pt ^
+--data test_mask3_63k_random0_0.parquet ^
+--vocab vocab_global_63k.tsv ^
+--out npz_ir_none.npz ^
+--ir_ablation none
+
+The exported NPZ files can be evaluated using:
+denovo_decode_eval_from_npz_fast_v1.py
+
+python denovo_decode_eval_from_npz_fast_v1.py ^
+  --npz npz_ir_none.npz ^
+  --test test_mask3_63k_random0_0.parquet ^
+  --beam_size 128 ^
+  --topk_out 5 ^
+  --top_edge_m 4096 ^
+  --top_type_r 32 ^
+  --out_csv ir_none.csv
+
+9.3 Fragment-vocabulary generalization analysis
+
+The fragment-vocabulary analysis evaluates the occurrence of unseen fragments in the test set.
+The script:
+analyze_fragment_vocabulary_ood.py
+
+classifies molecules into:
+fully_seen:
+all fragments observed during training
+
+partial_unseen:
+contains at least one unseen fragment
+
+fully_unseen:
+all fragments unseen
+
+Run:
+python final_ood_full_code.py
+The output summarizes fragment-vocabulary generalization statistics used in the manuscript.
+
+
+10. Scaffold-level failure analysis for SI
     
 python analyze_scaffold_failures.py ^
   --pred_csv pred_random0_mask3_w0005_top32.csv ^
@@ -486,7 +566,7 @@ python analyze_scaffold_failures.py ^
   
 This script summarizes scaffold-level Top-1 failure counts, Top-1 failure rates, Top-5 failure rates, and typical failed cases. It is used for the scaffold-level failure analyses reported in the Supporting Information.
 
-10. Main paper code map
+11. Main paper code map
 Main paper
 •	preprocessing and filtering
 make_scaffold_dataset.py, make_mask_sum_csv.py, filter_dataset_by_mask_sum_keep_scaffold.py
@@ -520,7 +600,7 @@ si_peaktable_stage2_dataset.py, si_peaktable_stage2_model.py, si_peaktable_train
 
 analyze_scaffold_failures.py 
 
-11. Notes
+12. Notes
     
 The main paper claims should be reproduced with the IR-only Stage-2 MLP pipeline, not with the Transformer or multimodal branches.
 Transformer and multimodal scripts are intended for controlled comparison and supplementary analysis.
